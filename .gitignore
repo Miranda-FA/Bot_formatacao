@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+
+logs/*
+output/*
+!logs/.gitkeep
+!output/.gitkeep
+*.html
+*.missing_images.txt   

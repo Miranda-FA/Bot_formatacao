@@ -1,0 +1,17 @@
+[project]
+name = "eorbis-docbot"
+version = "0.1.0"
+description = "Converte Markdown do Obsidian para HTML importável no ClickUp Docs, substituindo imagens por URLs do GitHub."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "markdown2>=2.5.0",
+  "python-dotenv>=1.0.1",
+]
+
+[project.scripts]
+docbot = "eorbis_docbot.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
