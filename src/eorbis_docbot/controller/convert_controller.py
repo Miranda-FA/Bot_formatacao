@@ -1,14 +1,18 @@
 from __future__ import annotations
-from dataclasses import dataclass, field
 
-@dataclass
-class ConversionError:
-    file: str
-    error: str
+from eorbis_docbot.config import load_config
+from eorbis_docbot.services.converter_to_raw import run
+from eorbis_docbot.view.console_view import render
 
-@dataclass
-class ConversionReport:
-    total_files: int = 0
-    converted_files: int = 0
-    total_images_found: int = 0
-    errors: list[ConversionError] = field(default_factory=list)
+
+def main() -> None:
+    cfg = load_config()
+
+    report = run(
+        input_dir=cfg.input_dir,
+        output_dir=cfg.output_dir,
+        base_url=cfg.image_base_url,
+        recursive=True,
+    )
+
+    render(report)

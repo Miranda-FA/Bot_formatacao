@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: eorbis-docbot
+Version: 0.1.0
+Summary: Converte Markdown do Obsidian para HTML importável no ClickUp Docs, substituindo imagens por URLs do GitHub.
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: markdown2>=2.5.0
+Requires-Dist: python-dotenv>=1.0.1
+
+# Bot_formatacao
+Bot de conversão de arquivo .md para html 

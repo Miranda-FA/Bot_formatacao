@@ -4,7 +4,6 @@ from pathlib import Path
 
 cfg = load_config()
 
-# pegue um arquivo real do input
 sample = next(Path(cfg.input_dir).glob("**/*.md"))
 
 md = sample.read_text(encoding="utf-8")
