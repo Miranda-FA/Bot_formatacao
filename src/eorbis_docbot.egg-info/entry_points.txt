@@ -1,0 +1,2 @@
+[console_scripts]
+docbot = eorbis_docbot.cli:main
