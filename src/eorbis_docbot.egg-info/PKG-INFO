@@ -7,5 +7,206 @@ Description-Content-Type: text/markdown
 Requires-Dist: markdown2>=2.5.0
 Requires-Dist: python-dotenv>=1.0.1
 
-# Bot_formatacao
-Bot de conversão de arquivo .md para html 
+# Bot_formatação (Eorbis DocBot)
+
+Bot para **processar documentação do Obsidian em lote**, convertendo o padrão de imagens do Obsidian:
+
+* `![[Pasted image ...png]]`
+
+para Markdown padrão com URL pública:
+
+* `![](https://raw.githubusercontent.com/.../Pasted%20image%20....png)`
+
+O objetivo é permitir importação/uso da documentação em plataformas como **ClickUp** (e futuramente gerar HTML completo).
+
+---
+
+## ✅ O que o bot faz hoje
+
+* Lê **todos os arquivos `.md`** dentro de uma pasta (`INPUT_DIR`)
+* Converte embeds do Obsidian `![[...]]` em links Markdown padrão `![](url)`
+* Salva os arquivos convertidos em outra pasta (`OUTPUT_DIR`)
+* Mantém a **mesma estrutura de subpastas** do input
+* Gera um **relatório (ConversionReport)** com contadores e erros
+
+---
+
+## 📁 Estrutura do projeto (MVC + SOLID)
+
+O projeto usa layout `src/` e separa responsabilidades:
+
+```
+src/eorbis_docbot/
+  controller/         # Entrada do fluxo (chama service + view)
+  services/           # Casos de uso (batch convert)
+  transforms/         # Funções puras (listar, converter, salvar)
+  model/              # Modelos de dados (ConversionReport)
+  view/               # Saída no console (render do report)
+  config.py           # Lê .env e monta Config
+  __main__.py         # Executa o controller (python -m eorbis_docbot)
+```
+
+### Conceito rápido:
+
+* **Controller**: liga config → service → view
+* **Service**: orquestra o processo (lote)
+* **Transforms**: fazem tarefas pequenas e testáveis
+* **Model**: estrutura do report
+* **View**: imprime resultado no console
+
+---
+
+## ⚙️ Requisitos
+
+* Python 3.10+ (recomendado)
+* Ambiente virtual (`.venv`)
+
+---
+
+## 🚀 Instalação
+
+Na raiz do projeto:
+
+### 1) Criar venv
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### 2) Instalar dependências
+
+Se você já tem `pyproject.toml` configurado:
+
+```powershell
+pip install -e .
+```
+
+Ou, se estiver usando `requirements.txt`:
+
+```powershell
+pip install -r requirements.txt
+```
+
+---
+
+## 🔧 Configuração (.env)
+
+Crie um arquivo `.env` na raiz do projeto.
+
+### Exemplo recomendado
+
+```env
+# GitHub (onde as imagens estão hospedadas)
+GITHUB_OWNER=Miranda-FA
+GITHUB_REPO=Bot_formatacao
+GITHUB_BRANCH=main
+GITHUB_IMAGES_DIR=imagens_doc
+
+# Pastas locais
+INPUT_DIR=C:\Users\User\Desktop\MDs
+OUTPUT_DIR=C:\Users\User\Desktop\MDs_convertidos
+
+# Opcional (futuro/HTML)
+DOC_VERSION=3.22.3
+LOGO_EORBIS=https://raw.githubusercontent.com/...
+LOGO_METAPRIME=https://raw.githubusercontent.com/...
+```
+
+> `INPUT_DIR` e `OUTPUT_DIR` devem ser **pastas**, não arquivos.
+
+O `config.py` monta automaticamente o `image_base_url` como:
+
+```
+https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{images_dir}
+```
+
+---
+
+## ▶️ Como rodar
+
+Após instalar em modo editable (`pip install -e .`):
+
+```powershell
+python -m eorbis_docbot
+```
+
+Esse comando:
+
+* carrega o `.env`
+* lista os `.md` em `INPUT_DIR`
+* converte as imagens
+* salva no `OUTPUT_DIR`
+* imprime o report no console
+
+---
+
+## 🧪 Testes rápidos (sandboxes)
+
+Durante o desenvolvimento, foram usados arquivos de teste na raiz do repo:
+
+* `sandbox_list_files.py` → lista `.md`
+* `sandbox_write_out.py` → testa salvar mantendo subpastas
+* `sandbox_obsidian_one.py` → testa converter 1 arquivo
+
+Você pode manter esses scripts para debug local.
+
+---
+
+## 🛠️ Troubleshooting
+
+### ❌ `ModuleNotFoundError: No module named 'eorbis_docbot'`
+
+Você provavelmente executou o arquivo pelo caminho:
+
+```powershell
+python src/eorbis_docbot/__main__.py
+```
+
+✅ Correto:
+
+```powershell
+pip install -e .
+python -m eorbis_docbot
+```
+
+---
+
+### ❌ Links de imagem não abrem
+
+Confirme:
+
+* o arquivo existe no GitHub na pasta `GITHUB_IMAGES_DIR`
+* branch (`main/master`) está correto
+* `image_base_url` está no formato raw:
+
+  * `raw.githubusercontent.com/...`
+* espaços nos nomes são convertidos em `%20` automaticamente pelo bot
+
+---
+
+### ❌ Alguns embeds não são imagem
+
+O bot **só converte** o embed se o arquivo terminar com extensão de imagem (png/jpg/jpeg/webp etc.).
+Se você usa embeds de nota do Obsidian, eles serão preservados.
+
+---
+
+## 📌 Roadmap (próximas evoluções)
+
+* [ ] Validar se imagens referenciadas realmente existem no GitHub (relatório de faltantes)
+* [ ] Converter Markdown normalizado → HTML
+* [ ] Gerar HTML final formatado para ClickUp (com header/logos/versão)
+* [ ] CLI completo (pyproject entrypoint) com comandos:
+
+  * `docbot convert-md`
+  * `docbot to-html`
+  * `docbot clickup-html`
+
+---
+
+## 👤 Autor
+
+Gabriel Miranda Felício de Almeida
+Projeto para automação e padronização da documentação Eorbis/Meta Prime.
+
